@@ -3,498 +3,946 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Expert Foguete — Nicho, Avatar e Método</title>
+<title>Calculadora de Precificação · Laboratório Ancestral</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
-
   :root {
-    --bg: #0d0010;
-    --surface: #160018;
-    --card: #1e0026;
-    --border: #3a1045;
-    --accent: #c026d3;
-    --accent2: #f472b6;
-    --accent3: #e879f9;
-    --text: #fdf4ff;
-    --muted: #a855b5;
-    --radius: 16px;
+    --terracota: #A0522D;
+    --terracota-dark: #7B3F1E;
+    --ouro: #C9A84C;
+    --ouro-light: #E8D08A;
+    --creme: #F5EDD8;
+    --creme-dark: #EAD9B8;
+    --marrom: #3D1E0A;
+    --branco-off: #FAF6EF;
+    --cinza: #8A7F70;
+    --verde-folha: #4A6741;
+    --sombra: rgba(61,30,10,0.12);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
-    background: var(--bg); color: var(--text);
-    font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--branco-off);
+    color: var(--marrom);
+    min-height: 100vh;
   }
-  .bg-glow {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none; z-index: 0;
-    background: radial-gradient(ellipse 60% 40% at 20% 10%, rgba(192,38,211,0.15) 0%, transparent 70%),
-                radial-gradient(ellipse 40% 30% at 80% 80%, rgba(244,114,182,0.10) 0%, transparent 70%);
+
+  /* HEADER */
+  header {
+    background: var(--marrom);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
   }
-  .app {
-    position: relative; z-index: 1;
-    max-width: 780px; margin: 0 auto; padding: 32px 20px 80px;
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 18px,
+      rgba(201,168,76,0.07) 18px,
+      rgba(201,168,76,0.07) 19px
+    );
   }
-  .header { text-align: center; margin-bottom: 40px; }
-  .badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(192,38,211,0.15); border: 1px solid rgba(192,38,211,0.35);
-    color: #e879f9; padding: 6px 16px; border-radius: 100px;
-    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-    text-transform: uppercase; margin-bottom: 16px;
+  .header-inner { position: relative; z-index: 1; }
+  .lab-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    color: var(--ouro);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
   }
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(28px, 5vw, 44px); font-weight: 800; line-height: 1.1;
-    background: linear-gradient(135deg, #ffffff 0%, #e879f9 50%, #f472b6 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px;
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.7rem, 5vw, 2.8rem);
+    font-weight: 300;
+    color: var(--creme);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
   }
-  .subtitle { color: var(--muted); font-size: 15px; line-height: 1.6; }
-  .stepper {
-    display: flex; align-items: center;
-    margin-bottom: 36px; background: var(--surface);
-    border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px;
+  header h1 em {
+    font-style: italic;
+    color: var(--ouro-light);
   }
-  .step {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    flex: 1; cursor: pointer; transition: all 0.2s;
+  header p {
+    font-size: 0.82rem;
+    color: rgba(245,237,216,0.6);
+    font-weight: 300;
+    letter-spacing: 0.02em;
   }
-  .step-circle {
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; transition: all 0.3s;
-    border: 2px solid var(--border); background: var(--card); color: var(--muted);
+  .ornamento {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    justify-content: center;
+    margin: 1rem 0 0.3rem;
   }
-  .step.active .step-circle { border-color: var(--accent); background: rgba(192,38,211,0.2); color: #e879f9; }
-  .step.done .step-circle { border-color: var(--accent2); background: rgba(244,114,182,0.15); color: var(--accent2); }
-  .step-label { font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; text-align: center; }
-  .step.active .step-label { color: #e879f9; }
-  .step.done .step-label { color: var(--accent2); }
-  .step-connector { height: 2px; flex: 1; background: var(--border); border-radius: 2px; transition: background 0.3s; }
-  .step-connector.done { background: var(--accent2); }
-  .phase-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 28px; animation: fadeUp 0.4s ease;
+  .ornamento span { width: 40px; height: 1px; background: var(--ouro); opacity: 0.5; }
+  .ornamento-icon { color: var(--ouro); font-size: 0.9rem; opacity: 0.7; }
+
+  /* LAYOUT */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
   }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0.4rem;
+    background: var(--creme-dark);
+    border-radius: 12px;
+    padding: 0.3rem;
+    margin-bottom: 1.8rem;
   }
-  .phase-header {
-    display: flex; align-items: center; gap: 14px;
-    margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
-  }
-  .phase-icon {
-    width: 48px; height: 48px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
-  }
-  .phase-icon.p1 { background: rgba(192,38,211,0.15); }
-  .phase-icon.p2 { background: rgba(244,114,182,0.15); }
-  .phase-icon.p3 { background: rgba(232,121,249,0.12); }
-  .phase-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
-  .phase-desc { font-size: 13px; color: var(--muted); margin-top: 3px; }
-  .question-block { margin-bottom: 22px; }
-  .question-label {
-    font-size: 13px; font-weight: 600; color: var(--text);
-    margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px;
-  }
-  .q-num {
-    background: rgba(192,38,211,0.25); color: #e879f9;
-    font-size: 10px; font-weight: 700; border-radius: 6px;
-    padding: 2px 6px; flex-shrink: 0; margin-top: 2px;
-  }
-  textarea {
-    width: 100%; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text); font-family: 'Inter', sans-serif;
-    font-size: 14px; padding: 12px 14px; resize: vertical; transition: border-color 0.2s;
-    outline: none; min-height: 80px;
-  }
-  textarea:focus { border-color: var(--accent); }
-  textarea.short { min-height: 48px; resize: none; }
-  .hint { font-size: 11px; color: var(--muted); margin-top: 5px; font-style: italic; }
-  .client-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
   .tab-btn {
-    flex: 1; padding: 10px; border-radius: 10px;
-    border: 1px solid var(--border); background: var(--surface);
-    color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    flex: 1;
+    padding: 0.65rem 0.5rem;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--cinza);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    line-height: 1.3;
+    text-align: center;
   }
-  .tab-btn.active { border-color: var(--accent2); background: rgba(244,114,182,0.1); color: var(--accent2); }
-  .tab-btn.filled { border-color: var(--accent); color: var(--accent3); background: rgba(192,38,211,0.07); }
-  .btn-row { display: flex; gap: 12px; margin-top: 28px; }
-  .btn {
-    flex: 1; padding: 14px; border-radius: 12px;
-    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
-    cursor: pointer; transition: all 0.2s; border: none;
+  .tab-btn:hover { color: var(--terracota); }
+  .tab-btn.active {
+    background: var(--marrom);
+    color: var(--creme);
+    box-shadow: 0 2px 8px var(--sombra);
   }
-  .btn-primary {
-    background: linear-gradient(135deg, #c026d3, #7e22ce);
-    color: white; box-shadow: 0 4px 20px rgba(192,38,211,0.35);
+
+  /* SECTION CARD */
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 12px var(--sombra);
+    border: 1px solid rgba(201,168,76,0.15);
+    display: none;
   }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(192,38,211,0.5); }
-  .btn-secondary { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
-  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
-  .result-card {
-    background: var(--card); border: 1px solid rgba(232,121,249,0.3);
-    border-radius: var(--radius); padding: 28px; animation: fadeUp 0.4s ease;
+  .card.visible { display: block; }
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--terracota-dark);
+    margin-bottom: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
-  .result-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--accent3); margin-bottom: 8px; }
-  .result-subtitle { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
-  .result-section { margin-bottom: 24px; }
-  .result-section h3 {
-    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 10px;
-    display: flex; align-items: center; gap: 8px;
+  .card-title .icon {
+    width: 28px; height: 28px;
+    background: var(--creme);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
   }
-  .result-section h3::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .result-content {
-    background: var(--surface); border-radius: 12px; padding: 16px;
-    font-size: 14px; line-height: 1.7; color: var(--text);
-    border: 1px solid var(--border); white-space: pre-wrap;
+
+  /* FORM */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
   }
-  .loading-state { display: flex; align-items: center; gap: 12px; padding: 20px; color: var(--muted); font-size: 14px; }
-  .spinner {
-    width: 20px; height: 20px; border: 2px solid var(--border);
-    border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite;
+  .field-row.single { grid-template-columns: 1fr; }
+  .field-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
-  .progress-fill {
-    height: 100%; background: linear-gradient(90deg, #c026d3, #f472b6);
-    border-radius: 2px; transition: width 0.5s ease;
+  label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--cinza);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
-  textarea.error { border-color: #f43f5e !important; background: rgba(244,63,94,0.05); }
-  .error-msg {
-    background: rgba(244,63,94,0.12); border: 1px solid rgba(244,63,94,0.35);
-    color: #fb7185; border-radius: 10px; padding: 10px 14px;
-    font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  input[type=number], select {
+    width: 100%;
+    border: 1.5px solid var(--creme-dark);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--marrom);
+    background: var(--branco-off);
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+    appearance: textfield;
   }
-  .error-msg::before { content: "⚠"; font-size: 14px; }
-  .tab-btn.missing { border-color: rgba(244,63,94,0.5) !important; color: #fb7185 !important; }
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type=number]:focus, select:focus {
+    outline: none;
+    border-color: var(--ouro);
+    background: #fff;
+  }
+  .prefix-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .prefix-wrap span {
+    position: absolute;
+    left: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--cinza);
+    font-weight: 500;
+    pointer-events: none;
+  }
+  .prefix-wrap input { padding-left: 2rem; }
+  .suffix-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .suffix-wrap span {
+    position: absolute;
+    right: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--cinza);
+    pointer-events: none;
+  }
+  .suffix-wrap input { padding-right: 2.8rem; }
+
+  .field-hint {
+    font-size: 0.68rem;
+    color: var(--cinza);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* SUBTOTAL ROW */
+  .subtotal-row {
+    background: var(--creme);
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    border-left: 3px solid var(--terracota);
+  }
+  .subtotal-label { font-size: 0.78rem; color: var(--cinza); font-weight: 500; }
+  .subtotal-value { font-size: 1rem; font-weight: 600; color: var(--terracota); font-family: 'Cormorant Garamond', serif; }
+
+  /* DIVIDER */
+  .section-divider {
+    border: none;
+    border-top: 1px dashed rgba(201,168,76,0.3);
+    margin: 1rem 0;
+  }
+
+  /* MARGEM SELECTOR */
+  .margem-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .margem-opt {
+    padding: 0.5rem 0.4rem;
+    border: 1.5px solid var(--creme-dark);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--branco-off);
+  }
+  .margem-opt:hover { border-color: var(--ouro); }
+  .margem-opt.selected {
+    border-color: var(--terracota);
+    background: var(--terracota);
+    color: #fff;
+  }
+  .margem-opt .m-pct { font-size: 1rem; font-weight: 600; font-family: 'Cormorant Garamond', serif; }
+  .margem-opt .m-label { font-size: 0.62rem; opacity: 0.8; margin-top: 2px; }
+  .margem-custom-wrap {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+  .margem-custom-wrap label { white-space: nowrap; font-size: 0.72rem; }
+  .margem-custom-wrap input { width: 80px; flex-shrink: 0; }
+
+  /* RESULTADO */
+  #resultado-section {
+    background: var(--marrom);
+    border-radius: 16px;
+    padding: 1.8rem 1.5rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  #resultado-section.visible { display: block; }
+  .resultado-titulo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ouro);
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+  .preco-final-wrap {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .preco-label { font-size: 0.75rem; color: rgba(245,237,216,0.6); margin-bottom: 0.3rem; }
+  .preco-valor {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--creme);
+    line-height: 1;
+    animation: pulse-in 0.4s ease;
+  }
+  @keyframes pulse-in {
+    from { transform: scale(0.92); opacity: 0.5; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .breakdown-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .breakdown-item {
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgba(201,168,76,0.15);
+  }
+  .bi-label { font-size: 0.67rem; color: rgba(245,237,216,0.5); text-transform: uppercase; letter-spacing: 0.06em; }
+  .bi-val { font-size: 1rem; font-family: 'Cormorant Garamond', serif; color: var(--creme); margin-top: 0.2rem; }
+  .bi-val.highlight { color: var(--ouro-light); }
+
+  .faixa-bar {
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-top: 0.5rem;
+  }
+  .faixa-label { font-size: 0.7rem; color: rgba(245,237,216,0.6); margin-bottom: 0.5rem; }
+  .faixa-range {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .faixa-min, .faixa-max {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--creme);
+    opacity: 0.7;
+  }
+  .faixa-bar-inner {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    position: relative;
+  }
+  .faixa-bar-fill {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    background: linear-gradient(90deg, var(--ouro) 0%, var(--terracota) 100%);
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  .faixa-dot {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px; height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--ouro);
+  }
+
+  /* BOTÃO */
+  .btn-calcular {
+    width: 100%;
+    padding: 1rem;
+    background: var(--terracota);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+    margin-top: 1.5rem;
+  }
+  .btn-calcular:hover {
+    background: var(--terracota-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(160,82,45,0.35);
+  }
+  .btn-calcular:active { transform: translateY(0); }
+
+  /* DICA */
+  .dica-box {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.75rem;
+    color: var(--cinza);
+    line-height: 1.5;
+    margin-top: 0.8rem;
+  }
+  .dica-box strong { color: var(--terracota-dark); }
+
+  /* TIPO PEÇA */
+  .tipo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .tipo-opt {
+    padding: 0.7rem 0.5rem;
+    border: 1.5px solid var(--creme-dark);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--branco-off);
+  }
+  .tipo-opt:hover { border-color: var(--ouro); }
+  .tipo-opt.selected {
+    border-color: var(--ouro);
+    background: var(--creme);
+  }
+  .tipo-opt .t-icon { font-size: 1.4rem; margin-bottom: 0.2rem; }
+  .tipo-opt .t-name { font-size: 0.7rem; font-weight: 500; color: var(--marrom); }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.72rem;
+    color: var(--cinza);
+    border-top: 1px solid var(--creme-dark);
+    margin-top: 3rem;
+  }
+  footer strong { color: var(--terracota); }
+
+  /* MOBILE */
+  @media (max-width: 480px) {
+    .field-row { grid-template-columns: 1fr; }
+    .field-row.triple { grid-template-columns: 1fr 1fr; }
+    .breakdown-grid { grid-template-columns: 1fr; }
+    .tipo-grid { grid-template-columns: 1fr 1fr; }
+    .margem-grid { grid-template-columns: repeat(2, 1fr); }
+    .preco-valor { font-size: 2.8rem; }
+    .tabs { flex-wrap: wrap; }
+    .tab-btn { font-size: 0.72rem; }
+  }
+
+  .step-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; height: 20px;
+    background: var(--ouro);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
-<div class="bg-glow"></div>
-<div class="app">
-  <div class="header">
-    <div class="badge">🚀 Mentoria Expert Foguete</div>
-    <h1>Defina seu Nicho,<br>Avatar e Método</h1>
-    <p class="subtitle">Responda as perguntas abaixo com o máximo de atenção para que<br>nossa IA te indique qual o seu nicho, avatar e método.</p>
+
+<header>
+  <div class="header-inner">
+    <div class="lab-logo">Laboratório Ancestral</div>
+    <h1>Calculadora de<br><em>Precificação</em></h1>
+    <div class="ornamento">
+      <span></span>
+      <span class="ornamento-icon">✦</span>
+      <span></span>
+    </div>
+    <p>Baseada no Guia de Precificação · Costura de Candomblé & Bordado de Barafunda</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="setTab('pronta')">🧵 Pronta Entrega</button>
+    <button class="tab-btn" onclick="setTab('exclusiva')">✨ Peça Exclusiva</button>
+    <button class="tab-btn" onclick="setTab('cliente')">🪡 Material do Cliente</button>
   </div>
 
-  <div class="stepper" id="stepper">
-    <div class="step active" id="step-0" onclick="goToPhase(0)">
-      <div class="step-circle">1</div>
-      <div class="step-label">Nicho</div>
+  <!-- ========== CARD 1: MATERIAIS ========== -->
+  <div class="card visible" id="card-materiais">
+    <div class="card-title">
+      <div class="icon">🧶</div>
+      <span>Custos de Materiais</span>
     </div>
-    <div class="step-connector" id="conn-0"></div>
-    <div class="step" id="step-1" onclick="goToPhase(1)">
-      <div class="step-circle">2</div>
-      <div class="step-label">Avatar</div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Tecido (metros)</label>
+        <input type="number" id="tecido-metros" placeholder="0" min="0" step="0.1" oninput="calcSubtotais()">
+      </div>
+      <div class="field">
+        <label>Preço por metro (R$)</label>
+        <div class="prefix-wrap">
+          <span>R$</span>
+          <input type="number" id="tecido-preco" placeholder="0,00" min="0" step="0.01" oninput="calcSubtotais()">
+        </div>
+      </div>
     </div>
-    <div class="step-connector" id="conn-1"></div>
-    <div class="step" id="step-2" onclick="goToPhase(2)">
-      <div class="step-circle">3</div>
-      <div class="step-label">Método</div>
+
+    <div class="field-row triple">
+      <div class="field">
+        <label>Linha (R$)</label>
+        <div class="prefix-wrap"><span>R$</span>
+          <input type="number" id="linha" placeholder="0" min="0" step="0.01" oninput="calcSubtotais()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Viés / Aviamentos (R$)</label>
+        <div class="prefix-wrap"><span>R$</span>
+          <input type="number" id="aviamentos" placeholder="0" min="0" step="0.01" oninput="calcSubtotais()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Outros Materiais (R$)</label>
+        <div class="prefix-wrap"><span>R$</span>
+          <input type="number" id="outros-mat" placeholder="0" min="0" step="0.01" oninput="calcSubtotais()">
+        </div>
+      </div>
     </div>
-    <div class="step-connector" id="conn-2"></div>
-    <div class="step" id="step-3">
-      <div class="step-circle">✦</div>
-      <div class="step-label">Resultado</div>
+
+    <div class="subtotal-row">
+      <span class="subtotal-label">Custo total de materiais</span>
+      <span class="subtotal-value" id="sub-materiais">R$ 0,00</span>
     </div>
   </div>
 
-  <div class="progress-bar">
-    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+  <!-- ========== CARD 2: TEMPO ========== -->
+  <div class="card visible" id="card-tempo">
+    <div class="card-title">
+      <div class="icon">⏱</div>
+      <span>Seu Tempo &amp; Valor-Hora</span>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Salário desejado / mês (R$)</label>
+        <div class="prefix-wrap"><span>R$</span>
+          <input type="number" id="salario" placeholder="3000" min="0" step="50" oninput="calcValorHora()">
+        </div>
+        <span class="field-hint">Quanto você quer ganhar por mês?</span>
+      </div>
+      <div class="field">
+        <label>Horas trabalhadas / mês</label>
+        <div class="suffix-wrap">
+          <input type="number" id="horas-mes" placeholder="160" min="1" max="300" step="1" oninput="calcValorHora()">
+          <span>h</span>
+        </div>
+        <span class="field-hint">Ex: 40h/sem × 4 = 160h/mês</span>
+      </div>
+    </div>
+
+    <div class="subtotal-row" style="margin-bottom:1rem;">
+      <span class="subtotal-label">Seu valor-hora calculado</span>
+      <span class="subtotal-value" id="valor-hora-display">R$ 0,00</span>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="card-title" style="font-size:1rem; margin-bottom:0.8rem;">
+      <div class="icon">📋</div>
+      <span>Tempo de Produção desta Peça</span>
+    </div>
+
+    <div class="field-row triple">
+      <div class="field">
+        <label>Medição / Planejamento</label>
+        <div class="suffix-wrap">
+          <input type="number" id="tempo-medicao" placeholder="0" min="0" step="5" oninput="calcSubtotais()">
+          <span>min</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Corte do Tecido</label>
+        <div class="suffix-wrap">
+          <input type="number" id="tempo-corte" placeholder="0" min="0" step="5" oninput="calcSubtotais()">
+          <span>min</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Costura / Bordado</label>
+        <div class="suffix-wrap">
+          <input type="number" id="tempo-costura" placeholder="0" min="0" step="5" oninput="calcSubtotais()">
+          <span>min</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Acabamento / Revisão</label>
+        <div class="suffix-wrap">
+          <input type="number" id="tempo-acabamento" placeholder="0" min="0" step="5" oninput="calcSubtotais()">
+          <span>min</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Atendimento ao Cliente</label>
+        <div class="suffix-wrap">
+          <input type="number" id="tempo-atend" placeholder="0" min="0" step="5" oninput="calcSubtotais()">
+          <span>min</span>
+        </div>
+        <span class="field-hint">Inclua para peças exclusivas</span>
+      </div>
+    </div>
+
+    <div class="subtotal-row">
+      <span class="subtotal-label">Custo total do seu tempo</span>
+      <span class="subtotal-value" id="sub-tempo">R$ 0,00</span>
+    </div>
+
+    <div class="dica-box">
+      💡 <strong>Dica do guia:</strong> Cronometrar cada etapa ajuda a padronizar preços e evitar subestimar o trabalho. Para uma bata masculina, o guia exemplifica: 15 min medição + 20 min corte + 2h costura + 30 min acabamento = 3h05.
+    </div>
   </div>
 
-  <div id="content"></div>
-</div>
+  <!-- ========== CARD 3: DESPESAS ========== -->
+  <div class="card visible" id="card-despesas">
+    <div class="card-title">
+      <div class="icon">🏠</div>
+      <span>Despesas Operacionais &amp; Indiretas</span>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Despesas fixas totais / mês (R$)</label>
+        <div class="prefix-wrap"><span>R$</span>
+          <input type="number" id="desp-mes" placeholder="600" min="0" step="10" oninput="calcSubtotais()">
+        </div>
+        <span class="field-hint">Aluguel + energia + internet + manutenção</span>
+      </div>
+      <div class="field">
+        <label>Peças produzidas / mês</label>
+        <input type="number" id="pecas-mes" placeholder="20" min="1" step="1" oninput="calcSubtotais()">
+        <span class="field-hint">Quantas peças você faz por mês?</span>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Marketing &amp; Embalagens / mês (R$)</label>
+        <div class="prefix-wrap"><span>R$</span>
+          <input type="number" id="marketing-mes" placeholder="200" min="0" step="10" oninput="calcSubtotais()">
+        </div>
+        <span class="field-hint">Redes sociais, sacolas, etiquetas</span>
+      </div>
+      <div class="field">
+        <label>Embalagem &amp; Entrega desta peça (R$)</label>
+        <div class="prefix-wrap"><span>R$</span>
+          <input type="number" id="embalagem" placeholder="0" min="0" step="0.50" oninput="calcSubtotais()">
+        </div>
+      </div>
+    </div>
+
+    <div class="subtotal-row">
+      <span class="subtotal-label">Despesas alocadas nesta peça</span>
+      <span class="subtotal-value" id="sub-despesas">R$ 0,00</span>
+    </div>
+  </div>
+
+  <!-- ========== CARD 4: MARGEM ========== -->
+  <div class="card visible" id="card-margem">
+    <div class="card-title">
+      <div class="icon">📈</div>
+      <span>Margem de Lucro</span>
+    </div>
+
+    <div class="margem-grid" id="margem-presets">
+      <div class="margem-opt" onclick="setMargem(30)" data-val="30">
+        <div class="m-pct">30%</div>
+        <div class="m-label">Mínima</div>
+      </div>
+      <div class="margem-opt selected" onclick="setMargem(50)" data-val="50">
+        <div class="m-pct">50%</div>
+        <div class="m-label">Recomendada</div>
+      </div>
+      <div class="margem-opt" onclick="setMargem(70)" data-val="70">
+        <div class="m-pct">70%</div>
+        <div class="m-label">Elevada</div>
+      </div>
+      <div class="margem-opt" onclick="setMargem(80)" data-val="80">
+        <div class="m-pct">80%</div>
+        <div class="m-label">Exclusiva</div>
+      </div>
+      <div class="margem-opt" onclick="setMargem(100)" data-val="100">
+        <div class="m-pct">100%</div>
+        <div class="m-label">Premium</div>
+      </div>
+      <div class="margem-opt" onclick="setMargem(0, true)" data-val="custom">
+        <div class="m-pct">✏️</div>
+        <div class="m-label">Personalizar</div>
+      </div>
+    </div>
+
+    <div class="margem-custom-wrap" id="margem-custom-wrap" style="display:none">
+      <label>Margem personalizada:</label>
+      <div class="suffix-wrap">
+        <input type="number" id="margem-custom" placeholder="0" min="0" max="500" step="1" oninput="setMargem(parseInt(this.value)||0)">
+        <span>%</span>
+      </div>
+    </div>
+
+    <div class="dica-box" id="margem-dica" style="margin-top:0.8rem;">
+      💡 <strong>Guia recomenda:</strong> Peças prontas: 30–60% · Peças exclusivas: 50–100% · Peças com material do cliente: 30–50%
+    </div>
+  </div>
+
+  <!-- BOTÃO CALCULAR -->
+  <button class="btn-calcular" onclick="calcular()">
+    Calcular Preço Final →
+  </button>
+
+  <!-- ========== RESULTADO ========== -->
+  <div id="resultado-section">
+    <div class="resultado-titulo">✦ Resultado da Precificação ✦</div>
+
+    <div class="preco-final-wrap">
+      <div class="preco-label">Preço sugerido para esta peça</div>
+      <div class="preco-valor" id="preco-final">R$ 0,00</div>
+    </div>
+
+    <div class="breakdown-grid">
+      <div class="breakdown-item">
+        <div class="bi-label">Custo de Materiais</div>
+        <div class="bi-val" id="res-materiais">R$ 0,00</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="bi-label">Custo do seu Tempo</div>
+        <div class="bi-val" id="res-tempo">R$ 0,00</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="bi-label">Despesas da Peça</div>
+        <div class="bi-val" id="res-despesas">R$ 0,00</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="bi-label">Custo Total</div>
+        <div class="bi-val" id="res-custo-total">R$ 0,00</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="bi-label">Margem Aplicada</div>
+        <div class="bi-val highlight" id="res-margem">50%</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="bi-label">Seu Lucro</div>
+        <div class="bi-val highlight" id="res-lucro">R$ 0,00</div>
+      </div>
+    </div>
+
+    <div class="faixa-bar">
+      <div class="faixa-label">Faixa de preço sugerida para este tipo de peça:</div>
+      <div class="faixa-range">
+        <div class="faixa-min" id="faixa-min">R$ 0</div>
+        <div class="faixa-bar-inner">
+          <div class="faixa-bar-fill" id="faixa-fill" style="width:50%">
+            <div class="faixa-dot"></div>
+          </div>
+        </div>
+        <div class="faixa-max" id="faixa-max">R$ 0</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Criado com 💛 pelo <strong>Laboratório Ancestral</strong> · Baseado no Guia de Precificação 2024<br>
+  Axé e bons negócios para todas as mãos que costuram com sabedoria ancestral.
+</footer>
 
 <script>
-  // ⚠️ TROQUE PELA URL DO SEU CLOUDFLARE WORKER (você vai receber após criar)
-  const WORKER_URL = "https://SEU-WORKER.SEU-USUARIO.workers.dev";
+  let margemAtual = 50;
+  let tabAtual = 'pronta';
 
-  let currentPhase = 0;
-  let currentClient = 0;
-  const answers = { phase0: {}, phase1: { c0: {}, c1: {}, c2: {} }, phase2: {} };
-
-  const phase0Questions = [
-    { id: 'tema', label: 'Qual é o tema de ensino do seu projeto?', hint: 'Ex: maternidade, confeitaria, corte a laser…' },
-    { id: 'conquistas', label: 'Quais principais conquistas você já obteve que as pessoas não costumam ter?', hint: 'Premiações, títulos, feitos marcantes' },
-    { id: 'gosta_falar', label: 'O que você gosta muito de falar sobre?', hint: 'Temas que te animam naturalmente' },
-    { id: 'pedem_ensinar', label: 'O que as pessoas pedem ou já pediram para você ensinar?', hint: '' },
-    { id: 'domina', label: 'Quais assuntos você domina tanto que poderia responder 1 milhão de perguntas sem travar?', hint: '' },
-    { id: 'desafios', label: 'Quais grandes desafios você já superou na sua vida?', hint: 'Pessoais e profissionais' },
-    { id: 'beneficia', label: 'Quem pode se beneficiar do que você ensina?', hint: 'Quem é essa pessoa?' },
-    { id: 'objetivo_3m', label: 'Qual é seu principal objetivo para os próximos 3 meses?', hint: '', short: true },
-    { id: 'objetivo_1a', label: 'Qual é seu principal objetivo em 1 ano?', hint: '', short: true },
-  ];
-
-  const clientQuestions = [
-    { id: 'perfil', label: 'Qual era o perfil dessa pessoa quando chegou até você?', hint: 'Trabalhava com quê? Em que estágio estava?' },
-    { id: 'chegou', label: 'Como ela chegou até você?', hint: 'Ex: indicação, Instagram…', short: true },
-    { id: 'disse_precisar', label: 'O que ela disse que precisava? Use as palavras dela.', hint: 'Ex: "não tô vendendo", "quero aprender a precificar"' },
-    { id: 'problema_real', label: 'O que você enxergou como o problema real?', hint: 'Diferente do que ela verbalizou' },
-    { id: 'crenca', label: 'Qual era a crença errada que ela carregava?', hint: '' },
-    { id: 'transformacao', label: 'Quais foram as principais transformações dessa pessoa?', hint: 'Ex: faturou 20k, reduziu custos…' },
-    { id: 'tempo', label: 'Em quanto tempo você percebeu uma mudança?', hint: 'Ex: 1 mês, 2–3 meses…', short: true },
-    { id: 'cliente_ideal', label: 'Por que essa pessoa foi um cliente ideal para você?', hint: 'Perfil, mentalidade, comportamento…' },
-  ];
-
-  const phase2Questions = [
-    { id: 'tem_metodo', label: 'Você considera que tem um método claro?', hint: 'Sim ou não, e explique brevemente', short: true },
-    { id: 'estagio_inicial', label: 'Qual é o estágio inicial que seu aluno chega para aprender com você?', hint: 'O "antes" do aluno' },
-    { id: 'transformacao_final', label: 'Qual é a transformação que a pessoa passa a ter ao final do seu método?', hint: 'O "depois" do aluno' },
-    { id: 'pilares', label: 'Quais pilares o aluno precisa dominar? (2 a 5)', hint: 'Ex: produto, conteúdo e venda' },
-    { id: 'diferenciais', label: 'Você observa algum diferencial do seu método? Qual?', hint: 'O que te faz único no mercado' },
-  ];
-
-  function updateStepper() {
-    const progress = [10, 40, 70, 100];
-    document.getElementById('progressFill').style.width = progress[currentPhase] + '%';
-    for (let i = 0; i < 4; i++) {
-      const el = document.getElementById('step-' + i);
-      el.className = 'step' + (i < currentPhase ? ' done' : '') + (i === currentPhase ? ' active' : '');
-      if (i < 3) {
-        document.getElementById('conn-' + i).className = 'step-connector' + (i < currentPhase ? ' done' : '');
-      }
-    }
-  }
-
-  function saveCurrentAnswers() {
-    if (currentPhase === 0) {
-      phase0Questions.forEach(q => { const el = document.getElementById('q_' + q.id); if (el) answers.phase0[q.id] = el.value; });
-    } else if (currentPhase === 1) {
-      clientQuestions.forEach(q => { const el = document.getElementById('q_' + q.id); if (el) answers.phase1['c' + currentClient][q.id] = el.value; });
-    } else if (currentPhase === 2) {
-      phase2Questions.forEach(q => { const el = document.getElementById('q_' + q.id); if (el) answers.phase2[q.id] = el.value; });
-    }
-  }
-
-  function buildQuestions(questions, savedObj) {
-    return questions.map((q, i) => `
-      <div class="question-block">
-        <div class="question-label"><span class="q-num">${i+1}</span>${q.label}</div>
-        ${q.hint ? `<div class="hint">${q.hint}</div>` : ''}
-        <textarea id="q_${q.id}" class="${q.short ? 'short' : ''}" placeholder="Sua resposta aqui…" oninput="this.classList.remove('error'); const e=document.querySelector('.error-msg'); if(e) e.remove();">${savedObj[q.id] || ''}</textarea>
-      </div>`).join('');
-  }
-
-  function renderPhase0() {
-    document.getElementById('content').innerHTML = `
-      <div class="phase-card">
-        <div class="phase-header">
-          <div class="phase-icon p1">🔍</div>
-          <div><div class="phase-title">Diagnóstico de Nicho</div>
-          <div class="phase-desc">Vamos entender sua expertise e onde ela encaixa no mercado</div></div>
-        </div>
-        ${buildQuestions(phase0Questions, answers.phase0)}
-        <div class="btn-row"><button class="btn btn-primary" onclick="nextPhase()">Próximo: Avatar →</button></div>
-      </div>`;
-  }
-
-  function renderPhase1() {
-    const labels = ['Cliente 1', 'Cliente 2', 'Cliente 3'];
-    const tabs = labels.map((l, i) => {
-      const filled = answers.phase1['c' + i].perfil && i !== currentClient;
-      return `<button class="tab-btn ${currentClient === i ? 'active' : ''} ${filled ? 'filled' : ''}" onclick="switchClient(${i})">${filled ? '✓ ' : ''}${l}</button>`;
-    }).join('');
-    document.getElementById('content').innerHTML = `
-      <div class="phase-card">
-        <div class="phase-header">
-          <div class="phase-icon p2">👤</div>
-          <div><div class="phase-title">Público-alvo e Transformação</div>
-          <div class="phase-desc">Descreva 3 clientes ideais (reais ou simulados)</div></div>
-        </div>
-        <div class="client-tabs">${tabs}</div>
-        ${buildQuestions(clientQuestions, answers.phase1['c' + currentClient])}
-        <div class="btn-row">
-          <button class="btn btn-secondary" onclick="prevPhase()">← Voltar</button>
-          <button class="btn btn-primary" onclick="nextPhase()">Próximo: Método →</button>
-        </div>
-      </div>`;
-  }
-
-  function renderPhase2() {
-    document.getElementById('content').innerHTML = `
-      <div class="phase-card">
-        <div class="phase-header">
-          <div class="phase-icon p3">⚡</div>
-          <div><div class="phase-title">Seu Método</div>
-          <div class="phase-desc">Como você transforma as pessoas? Qual é o caminho?</div></div>
-        </div>
-        ${buildQuestions(phase2Questions, answers.phase2)}
-        <div class="btn-row">
-          <button class="btn btn-secondary" onclick="prevPhase()">← Voltar</button>
-          <button class="btn btn-primary" onclick="generateResult()">✦ Gerar meu Resultado</button>
-        </div>
-      </div>`;
-  }
-
-  function switchClient(i) {
-    saveCurrentAnswers(); currentClient = i; renderPhase1();
-  }
-
-  function goToPhase(i) {
-    if (i <= currentPhase) { saveCurrentAnswers(); currentPhase = i; updateStepper(); render(); }
-  }
-
-  function validatePhase0() {
-    let ok = true;
-    phase0Questions.forEach(q => {
-      const el = document.getElementById('q_' + q.id);
-      if (el && !el.value.trim()) { el.classList.add('error'); ok = false; }
-      else if (el) el.classList.remove('error');
+  // ======= TABS =======
+  function setTab(tipo) {
+    tabAtual = tipo;
+    document.querySelectorAll('.tab-btn').forEach((b,i) => {
+      b.classList.toggle('active', ['pronta','exclusiva','cliente'][i] === tipo);
     });
-    return ok;
-  }
 
-  function validatePhase1() {
-    let allClientsOk = true;
-    const missing = [];
-    for (let c = 0; c < 3; c++) {
-      let clientOk = true;
-      clientQuestions.forEach(q => {
-        const val = answers.phase1['c' + c][q.id];
-        if (!val || !val.trim()) { clientOk = false; allClientsOk = false; }
-      });
-      if (!clientOk) missing.push(c);
-    }
-    clientQuestions.forEach(q => {
-      const el = document.getElementById('q_' + q.id);
-      if (el && !el.value.trim()) el.classList.add('error');
-      else if (el) el.classList.remove('error');
-    });
-    return { ok: allClientsOk, missing };
-  }
-
-  function validatePhase2() {
-    let ok = true;
-    phase2Questions.forEach(q => {
-      const el = document.getElementById('q_' + q.id);
-      if (el && !el.value.trim()) { el.classList.add('error'); ok = false; }
-      else if (el) el.classList.remove('error');
-    });
-    return ok;
-  }
-
-  function showError(msg) {
-    const existing = document.querySelector('.error-msg');
-    if (existing) existing.remove();
-    const div = document.createElement('div');
-    div.className = 'error-msg';
-    div.textContent = msg;
-    const btnRow = document.querySelector('.btn-row');
-    if (btnRow) btnRow.parentNode.insertBefore(div, btnRow);
-    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  function nextPhase() {
-    saveCurrentAnswers();
-    if (currentPhase === 0) {
-      if (!validatePhase0()) { showError('Preencha todas as perguntas antes de continuar.'); return; }
-    }
-    if (currentPhase === 1) {
-      const result = validatePhase1();
-      if (!result.ok) {
-        const tabs = document.querySelectorAll('.tab-btn');
-        result.missing.forEach(i => { if (tabs[i]) tabs[i].classList.add('missing'); });
-        const clientesStr = result.missing.map(i => 'Cliente ' + (i+1)).join(', ');
-        showError('Preencha todas as perguntas dos 3 clientes antes de continuar. Faltando: ' + clientesStr);
-        return;
-      }
-    }
-    currentPhase++; updateStepper(); render();
-  }
-
-  function prevPhase() { saveCurrentAnswers(); currentPhase--; updateStepper(); render(); }
-
-  function render() {
-    if (currentPhase === 0) renderPhase0();
-    else if (currentPhase === 1) renderPhase1();
-    else if (currentPhase === 2) renderPhase2();
-  }
-
-  async function generateResult() {
-    saveCurrentAnswers();
-    if (!validatePhase2()) { showError('Preencha todas as perguntas antes de gerar o resultado.'); return; }
-    currentPhase = 3; updateStepper();
-    document.getElementById('content').innerHTML = `
-      <div class="result-card">
-        <div class="result-title">Gerando seu resultado…</div>
-        <div class="result-subtitle">A IA está analisando tudo que você respondeu</div>
-        <div class="loading-state"><div class="spinner"></div> Consolidando nicho, avatar e método…</div>
-      </div>`;
-
-    const a0 = answers.phase0, a1 = answers.phase1, a2 = answers.phase2;
-    const prompt = `Você é um especialista em posicionamento estratégico para experts e mentores digitais. Com base nas respostas abaixo, gere um diagnóstico completo e acionável com:
-
-1. 🎯 NICHO DEFINIDO — nome do nicho específico, para quem, qual dor principal, qual promessa central
-2. 👤 AVATAR DO CLIENTE IDEAL — síntese dos 3 clientes: quem é, o que quer, crença errada, linguagem que usa
-3. ⚡ MÉTODO ESTRUTURADO — nome sugerido para o método, pilares, estágio inicial e transformação final
-4. ✦ DIFERENCIAL DE POSICIONAMENTO — o que torna esse expert único e como deve se posicionar
-5. 🚀 PRÓXIMOS PASSOS — 3 ações concretas para começar a construir presença digital
-
----
-DIAGNÓSTICO:
-Tema: ${a0.tema||'?'} | Conquistas: ${a0.conquistas||'?'} | Gosta de falar: ${a0.gosta_falar||'?'}
-Pedem ensinar: ${a0.pedem_ensinar||'?'} | Domina: ${a0.domina||'?'} | Desafios: ${a0.desafios||'?'}
-Beneficia: ${a0.beneficia||'?'} | Obj 3m: ${a0.objetivo_3m||'?'} | Obj 1a: ${a0.objetivo_1a||'?'}
-
-CLIENTES IDEAIS:
-C1: perfil=${a1.c0.perfil||'?'} | problema real=${a1.c0.problema_real||'?'} | crença=${a1.c0.crenca||'?'} | transformação=${a1.c0.transformacao||'?'}
-C2: perfil=${a1.c1.perfil||'?'} | problema real=${a1.c1.problema_real||'?'} | crença=${a1.c1.crenca||'?'} | transformação=${a1.c1.transformacao||'?'}
-C3: perfil=${a1.c2.perfil||'?'} | problema real=${a1.c2.problema_real||'?'} | crença=${a1.c2.crenca||'?'} | transformação=${a1.c2.transformacao||'?'}
-
-MÉTODO:
-Estágio inicial: ${a2.estagio_inicial||'?'} | Transformação: ${a2.transformacao_final||'?'}
-Pilares: ${a2.pilares||'?'} | Diferenciais: ${a2.diferenciais||'?'}
-
-Escreva em português brasileiro, de forma clara e estratégica. Use os dados para ser específico.`;
-
-    try {
-      const res = await fetch(WORKER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
-      });
-      const data = await res.json();
-      const text = data.text || 'Erro ao gerar resultado.';
-      renderResult(text);
-    } catch (e) {
-      renderResult('Erro de conexão. Verifique a URL do Worker e tente novamente.\n\n' + e.message);
-    }
-  }
-
-  function renderResult(result) {
-    window._lastResult = result;
-    const clean = result.replace(/#{1,3} /g, '').trim();
-    const parts = clean.split(/\n\n(?=[🎯👤⚡✦🚀1-5])/);
-    let sectionsHtml = '';
-    if (parts.length <= 1) {
-      sectionsHtml = `<div class="result-section"><div class="result-content">${clean}</div></div>`;
+    // Atualizar dica de margem e presets
+    const dicaEl = document.getElementById('margem-dica');
+    if (tipo === 'pronta') {
+      dicaEl.innerHTML = '💡 <strong>Guia recomenda:</strong> Para peças prontas, margens de <strong>30% a 60%</strong> são comuns. O preço deve ser competitivo mantendo a sustentabilidade.';
+    } else if (tipo === 'exclusiva') {
+      dicaEl.innerHTML = '💡 <strong>Guia recomenda:</strong> Para peças exclusivas e sob medida, margens de <strong>50% a 100%</strong>. Inclua o tempo de atendimento personalizado e possíveis ajustes.';
     } else {
-      parts.forEach(part => {
-        const lines = part.trim().split('\n');
-        const title = lines[0].replace(/[*#.]/g, '').replace(/^\d+\s*/, '').trim();
-        const body = lines.slice(1).join('\n').replace(/\*\*/g, '').trim();
-        if (body) sectionsHtml += `<div class="result-section"><h3>${title}</h3><div class="result-content">${body}</div></div>`;
-      });
+      dicaEl.innerHTML = '💡 <strong>Guia recomenda:</strong> Para peças com material do cliente, margens de <strong>30% a 50%</strong>. Zere o campo de tecido — seu custo está apenas no tempo e nas despesas.';
     }
-    document.getElementById('content').innerHTML = `
-      <div class="result-card">
-        <div class="result-title">✦ Seu Posicionamento Estratégico</div>
-        <div class="result-subtitle">Resultado gerado com base em todas as suas respostas</div>
-        ${sectionsHtml}
-        <div class="btn-row">
-          <button class="btn btn-secondary" onclick="currentPhase=0; updateStepper(); render()">↺ Refazer</button>
-          <button class="btn btn-primary" onclick="navigator.clipboard.writeText(window._lastResult).then(()=>alert('Copiado!'))">Copiar resultado</button>
-        </div>
-      </div>`;
+
+    // hint tecido
+    if (tipo === 'cliente') {
+      document.getElementById('tecido-metros').placeholder = '0 (material do cliente)';
+      document.getElementById('tecido-preco').placeholder = '0 (material do cliente)';
+    } else {
+      document.getElementById('tecido-metros').placeholder = '0';
+      document.getElementById('tecido-preco').placeholder = '0,00';
+    }
   }
 
-  updateStepper();
-  render();
+  // ======= MARGEM =======
+  function setMargem(val, isCustom) {
+    const customWrap = document.getElementById('margem-custom-wrap');
+    if (isCustom) {
+      customWrap.style.display = 'flex';
+      return;
+    }
+    customWrap.style.display = 'none';
+    margemAtual = val;
+    document.querySelectorAll('.margem-opt').forEach(o => {
+      o.classList.toggle('selected', parseInt(o.dataset.val) === val);
+    });
+    calcSubtotais();
+  }
+
+  // ======= CÁLCULOS =======
+  function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+  function calcValorHora() {
+    const sal = v('salario');
+    const h = v('horas-mes') || 160;
+    const vh = h > 0 ? sal / h : 0;
+    document.getElementById('valor-hora-display').textContent = fmt(vh);
+    calcSubtotais();
+    return vh;
+  }
+
+  function calcSubtotais() {
+    // Materiais
+    const matTecido = v('tecido-metros') * v('tecido-preco');
+    const matTotal = matTecido + v('linha') + v('aviamentos') + v('outros-mat');
+    document.getElementById('sub-materiais').textContent = fmt(matTotal);
+
+    // Tempo
+    const vh = calcValorHoraVal();
+    const minTotal = v('tempo-medicao') + v('tempo-corte') + v('tempo-costura') + v('tempo-acabamento') + v('tempo-atend');
+    const hTotal = minTotal / 60;
+    const custoTempo = hTotal * vh;
+    document.getElementById('sub-tempo').textContent = fmt(custoTempo);
+
+    // Despesas
+    const pecas = v('pecas-mes') || 1;
+    const despFixa = (v('desp-mes') + v('marketing-mes')) / pecas;
+    const despTotal = despFixa + v('embalagem');
+    document.getElementById('sub-despesas').textContent = fmt(despTotal);
+  }
+
+  function calcValorHoraVal() {
+    const sal = v('salario');
+    const h = v('horas-mes') || 160;
+    return h > 0 ? sal / h : 0;
+  }
+
+  function calcular() {
+    // Materiais
+    const matTecido = v('tecido-metros') * v('tecido-preco');
+    const mat = matTecido + v('linha') + v('aviamentos') + v('outros-mat');
+
+    // Tempo
+    const vh = calcValorHoraVal();
+    const minTotal = v('tempo-medicao') + v('tempo-corte') + v('tempo-costura') + v('tempo-acabamento') + v('tempo-atend');
+    const tempo = (minTotal / 60) * vh;
+
+    // Despesas
+    const pecas = v('pecas-mes') || 1;
+    const despFixa = (v('desp-mes') + v('marketing-mes')) / pecas;
+    const desp = despFixa + v('embalagem');
+
+    // Margem
+    const mEl = document.getElementById('margem-custom');
+    if (document.getElementById('margem-custom-wrap').style.display !== 'none' && mEl.value) {
+      margemAtual = parseFloat(mEl.value) || 50;
+    }
+
+    const custoTotal = mat + tempo + desp;
+    const lucro = custoTotal * (margemAtual / 100);
+    const precoFinal = custoTotal + lucro;
+
+    // Mostrar resultado
+    const resEl = document.getElementById('resultado-section');
+    resEl.classList.add('visible');
+    resEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    document.getElementById('preco-final').textContent = fmt(precoFinal);
+    document.getElementById('res-materiais').textContent = fmt(mat);
+    document.getElementById('res-tempo').textContent = fmt(tempo);
+    document.getElementById('res-despesas').textContent = fmt(desp);
+    document.getElementById('res-custo-total').textContent = fmt(custoTotal);
+    document.getElementById('res-margem').textContent = margemAtual + '%';
+    document.getElementById('res-lucro').textContent = fmt(lucro);
+
+    // Faixa
+    let faixaMin, faixaMax;
+    if (tabAtual === 'pronta') { faixaMin = 0.30; faixaMax = 0.60; }
+    else if (tabAtual === 'exclusiva') { faixaMin = 0.50; faixaMax = 1.00; }
+    else { faixaMin = 0.30; faixaMax = 0.50; }
+
+    const fMin = custoTotal * (1 + faixaMin);
+    const fMax = custoTotal * (1 + faixaMax);
+    document.getElementById('faixa-min').textContent = fmt(fMin);
+    document.getElementById('faixa-max').textContent = fmt(fMax);
+
+    // Posição do dot na faixa
+    let pct = 50;
+    if (fMax > fMin) {
+      pct = Math.min(100, Math.max(0, ((precoFinal - fMin) / (fMax - fMin)) * 100));
+    }
+    document.getElementById('faixa-fill').style.width = Math.max(5, pct) + '%';
+  }
+
+  // ======= UTILITÁRIO =======
+  function fmt(val) {
+    return 'R$ ' + val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // Init defaults
+  document.getElementById('salario').value = 3000;
+  document.getElementById('horas-mes').value = 160;
+  document.getElementById('desp-mes').value = 600;
+  document.getElementById('pecas-mes').value = 20;
+  document.getElementById('marketing-mes').value = 200;
+  calcValorHora();
+  calcSubtotais();
 </script>
+
 </body>
 </html>
